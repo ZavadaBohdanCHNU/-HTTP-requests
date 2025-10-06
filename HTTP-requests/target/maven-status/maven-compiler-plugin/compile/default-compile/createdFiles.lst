@@ -1,0 +1,6 @@
+org\example\repositorytesting\model\User.class
+org\example\repositorytesting\repository\UserRepository.class
+org\example\repositorytesting\model\User$UserBuilder.class
+org\example\repositorytesting\service\UserService.class
+org\example\repositorytesting\controller\UserController.class
+org\example\repositorytesting\RepositoryTestingApplication.class
