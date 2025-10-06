@@ -1,0 +1,200 @@
+### GET ALL USERS
+GET http://localhost:8080/api/items
+Accept: application/json
+
+> {%
+client.test("Status is 200", function() {
+    client.assert(response.status === 200, "Response status is not 200");
+});
+%}
+
+###
+
+### CREATE USER - Pink Floyd Band Member
+POST http://localhost:8080/api/items
+Content-Type: application/json
+
+{
+  "name": "David Gilmour",
+  "code": "Pink Floyd",
+  "description": "Lead guitarist, vocalist, songwriter"
+}
+
+> {%
+client.test("User created successfully", function() {
+    client.assert(response.status === 200, "Response status is not 200");
+    client.assert(response.body.hasOwnProperty("name"), "Response should have name property");
+    client.assert(response.body["name"] === "David Gilmour", "Name doesn't match");
+
+    // Store the created user ID for future use
+    client.global.set("userId", response.body["id"]);
+});
+%}
+
+###
+
+### CREATE USER - Beatles Band Member
+POST http://localhost:8080/api/items
+Content-Type: application/json
+
+{
+  "name": "John Lennon",
+  "code": "Beatles",
+  "description": "Rhythm guitar, vocal, piano, harmonica"
+}
+
+> {%
+client.test("Beatles member created", function() {
+    client.assert(response.status === 200);
+    client.global.set("beatlesUserId", response.body["id"]);
+});
+%}
+
+###
+
+### CREATE USER - Solo Artist
+POST http://localhost:8080/api/items
+Content-Type: application/json
+
+{
+  "name": "Eric Clapton",
+  "code": "Solo",
+  "description": "Electric and acoustic guitar, vocal"
+}
+
+> {%
+client.global.set("soloArtistId", response.body["id"]);
+%}
+
+###
+
+### SEARCH USER BY NAME - Exact MATCH
+GET http://localhost:8080/api/items/search?name=David Gilmour
+Accept: application/json
+
+> {%
+client.test("Search returns correct user", function() {
+    client.assert(response.status === 200);
+    client.assert(response.body.length > 0, "No users found");
+    client.assert(response.body[0]["name"] === "David Gilmour", "Wrong user returned");
+});
+%}
+
+###
+
+### SEARCH USER BY NAME - Partial Match
+GET http://localhost:8080/api/items/search?name=John
+Accept: application/json
+
+###
+
+### UPDATE USER - Using stored ID
+PUT http://localhost:8080/api/items/{{userId}}
+Content-Type: application/json
+
+{
+  "name": "David Gilmour",
+  "code": "Pink Floyd",
+  "description": "Lead guitarist, vocalist, songwriter, producer"
+}
+
+> {%
+client.test("User updated successfully", function() {
+    client.assert(response.status === 200);
+    client.assert(response.body["description"].includes("producer"), "Description not updated");
+});
+%}
+
+###
+
+### GET ALL USERS AFTER UPDATES
+GET http://localhost:8080/api/items
+Accept: application/json
+
+> {%
+client.test("Multiple users exist", function() {
+    client.assert(response.status === 200);
+    client.assert(response.body.length >= 3, "Expected at least 3 users");
+});
+%}
+
+###
+
+### DELETE USER - Solo Artist
+DELETE http://localhost:8080/api/items/{{soloArtistId}}
+
+> {%
+client.test("User deleted successfully", function() {
+    client.assert(response.status === 204, "Expected 204 No Content");
+});
+%}
+
+###
+
+### VERIFY DELETION - Try to search deleted user
+GET http://localhost:8080/api/items/search?name=Eric Clapton
+Accept: application/json
+
+> {%
+client.test("Deleted user not found", function() {
+    client.assert(response.status === 200);
+    client.assert(response.body.length === 0, "Deleted user still exists");
+});
+%}
+
+###
+
+### ERROR TEST - Update Non-Existent User
+PUT http://localhost:8080/api/items/999999999999999999999999
+Content-Type: application/json
+
+{
+  "name": "Non Existent",
+  "code": "Test",
+  "description": "This should fail"
+}
+
+> {%
+client.test("Non-existent user update returns 404", function() {
+    client.assert(response.status === 404, "Expected 404 for non-existent user");
+});
+%}
+
+###
+
+### ERROR TEST - Search with Empty Name
+GET http://localhost:8080/api/items/search?name=
+Accept: application/json
+
+###
+
+### CREATE USER - With Special Characters
+POST http://localhost:8080/api/items
+Content-Type: application/json
+
+{
+  "name": "Sinéad O'Connor",
+  "code": "Solo",
+  "description": "Vocal, songwriter"
+}
+
+###
+
+### CREATE USER - Minimal Data
+POST http://localhost:8080/api/items
+Content-Type: application/json
+
+{
+  "name": "Bob Dylan"
+}
+
+###
+
+### CLEANUP - Delete Test Users
+DELETE http://localhost:8080/api/items/{{userId}}
+
+###
+
+DELETE http://localhost:8080/api/items/{{beatlesUserId}}
+
+###

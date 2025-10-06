@@ -1,0 +1,87 @@
+### Get All Users
+GET http://localhost:8080/api/items
+Accept: application/json
+
+###
+
+### Create New User
+POST http://localhost:8080/api/items
+Content-Type: application/json
+
+{
+  "name": "David Gilmour",
+  "code": "Pink Floyd",
+  "description": "guitar, vocal"
+}
+
+###
+
+### Create Another User
+POST http://localhost:8080/api/items
+Content-Type: application/json
+
+{
+  "name": "Roger Waters",
+  "code": "Pink Floyd",
+  "description": "bass, vocal"
+}
+
+###
+
+### Search User by Name
+GET http://localhost:8080/api/items/search?name=David Gilmour
+Accept: application/json
+
+###
+
+### Update User (replace {id} with actual user ID)
+PUT http://localhost:8080/api/items/67028f8a123456789abcdef0
+Content-Type: application/json
+
+{
+  "name": "David Gilmour",
+  "code": "Pink Floyd",
+  "description": "guitar, vocal, songwriter"
+}
+
+###
+
+### Delete User (replace {id} with actual user ID)
+DELETE http://localhost:8080/api/items/67028f8a123456789abcdef0
+
+###
+
+### Test Scenarios - Create User with All Fields
+POST http://localhost:8080/api/items
+Content-Type: application/json
+
+{
+  "name": "John Lennon",
+  "code": "Beatles",
+  "description": "rhythm guitar, vocal, piano"
+}
+
+###
+
+### Test Scenarios - Create User with Minimal Data
+POST http://localhost:8080/api/items
+Content-Type: application/json
+
+{
+  "name": "Paul McCartney",
+  "code": "Beatles"
+}
+
+###
+
+### Search for Non-Existent User
+GET http://localhost:8080/api/items/search?name=Non Existent User
+Accept: application/json
+
+###
+
+### Search with Special Characters
+GET http://localhost:8080/api/items/search?name=O'Connor
+Accept: application/json
+
+###
